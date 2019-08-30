@@ -1,8 +1,23 @@
 'use strict';
 
 const undefinedToNull = require('../utils/undefined-to-null');
+import { NodeInfo } from 'broccoli-node-api';
 
-module.exports = class NodeWrapper {
+export default class NodeWrapper {
+  _revision: number;
+  buildState: {
+    selfTime?: number;
+    totalTime?: number;
+    built?: boolean;
+  };
+
+  id!: number;
+  label!: string;
+  cachePath!: string;
+  outputPath!: string;
+  nodeInfo!: NodeInfo;
+  inputNodeWrappers!: any[];
+
   constructor() {
     this.buildState = {};
     this._revision = 0;
@@ -32,4 +47,8 @@ module.exports = class NodeWrapper {
   formatInstantiationStackForTerminal() {
     return '\n-~- created here: -~-\n' + this.nodeInfo.instantiationStack + '\n-~- (end) -~-';
   }
+
+  nodeInfoToJSON() {
+    return {};  
+  };
 };

@@ -1,13 +1,20 @@
 'use strict';
 
-const NodeWrapper = require('./node');
+import NodeWrapper from './node';
+import { TransformNodeInfo } from 'broccoli-node-api';
 const fs = require('fs');
 const undefinedToNull = require('../utils/undefined-to-null');
 const rimraf = require('rimraf');
 const logger = require('heimdalljs-logger')('broccoli:transform-node');
 
-module.exports = class TransformNodeWrapper extends NodeWrapper {
-  setup(features) {
+export default class TransformNodeWrapper extends NodeWrapper {
+  inputRevisions!: WeakMap<any, { revision: number, changed: boolean }>;
+  callbackObject: any;
+  inputPaths!: string[];
+  nodeInfo!: TransformNodeInfo;
+
+
+  setup(features: any) {
     this.nodeInfo.setup(features, {
       inputPaths: this.inputPaths,
       outputPath: this.outputPath,
@@ -22,8 +29,8 @@ module.exports = class TransformNodeWrapper extends NodeWrapper {
   }
 
   shouldBuild() {
-    let nodesThatChanged = [];
-    this.inputNodeWrappers.forEach(wrapper => {
+    let nodesThatChanged: any[] = [];
+    this.inputNodeWrappers.forEach((wrapper: any) => {
       let wrapper_revision_meta = this.inputRevisions.get(wrapper);
 
       if (!wrapper_revision_meta || wrapper_revision_meta.revision !== wrapper.revision) {
@@ -60,7 +67,7 @@ module.exports = class TransformNodeWrapper extends NodeWrapper {
   }
 
   build() {
-    let startTime;
+    let startTime: [number, number];
 
     return new Promise(resolve => {
       startTime = process.hrtime();
@@ -77,7 +84,7 @@ module.exports = class TransformNodeWrapper extends NodeWrapper {
 
       if (this.nodeInfo.trackInputChanges === true) {
         let changed = this.inputNodeWrappers.map(
-          wrapper => this.inputRevisions.get(wrapper).changed
+          wrapper => this.inputRevisions.get(wrapper)!.changed
         );
 
         resolve(this.callbackObject.build({ changedNodes: changed }));

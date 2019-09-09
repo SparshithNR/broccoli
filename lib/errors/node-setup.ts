@@ -1,10 +1,13 @@
-const BuilderError = require('./builder');
+import BuilderError from './builder';
 const wrapPrimitiveErrors = require('../utils/wrap-primitive-errors');
 
-module.exports = class NodeSetupError extends BuilderError {
-  constructor(originalError, nodeWrapper) {
+export default class NodeSetupError extends BuilderError {
+  stack: any;
+
+  constructor(originalError: any, nodeWrapper: any) {
     if (nodeWrapper == null) {
       // Chai calls new NodeSetupError() :(
+      // @ts-ignore
       super();
       return;
     }
@@ -14,6 +17,7 @@ module.exports = class NodeSetupError extends BuilderError {
       '\nat ' +
       nodeWrapper.label +
       nodeWrapper.formatInstantiationStackForTerminal();
+    // @ts-ignore
     super(message);
     // The stack will have the original exception name, but that's OK
     this.stack = originalError.stack;

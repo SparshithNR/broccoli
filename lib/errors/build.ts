@@ -1,10 +1,15 @@
-const BuilderError = require('./builder');
+import BuilderError from './builder';
 const wrapPrimitiveErrors = require('../utils/wrap-primitive-errors');
 
-module.exports = class BuildError extends BuilderError {
-  constructor(originalError, nodeWrapper) {
+export default class BuildError extends BuilderError {
+  isSilent: any;
+  isCancellation: any;
+  broccoliPayload: any;
+
+  constructor(originalError: any, nodeWrapper: any) {
     if (nodeWrapper == null) {
       // for Chai
+      // @ts-ignore
       super();
       return;
     }
@@ -41,6 +46,7 @@ module.exports = class BuildError extends BuilderError {
       nodeWrapper.label +
       instantiationStack;
 
+    // @ts-ignore
     super(message);
     // consider for x in y
     this.stack = originalError.stack;

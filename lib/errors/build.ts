@@ -1,15 +1,32 @@
 import BuilderError from './builder';
-const wrapPrimitiveErrors = require('../utils/wrap-primitive-errors');
+import NodeWrapper from '../wrappers/node';
+import wrapPrimitiveErrors from '../utils/wrap-primitive-errors';
+
+interface BroccoliPayloadError {
+  originalError: Error;
+  originalMessage: string,
+  nodeId: number;
+  nodeLabel: string;
+  nodeName: string;
+  nodeAnnotation: string | undefined | null;
+  instantiationStack: string;
+  // error location (if any)
+  location: {
+    file: string;
+    treeDir: string;
+    line: number;
+    column: number;
+  },
+}
 
 export default class BuildError extends BuilderError {
-  isSilent: any;
-  isCancellation: any;
-  broccoliPayload: any;
+  isSilent!: boolean;
+  isCancellation!: boolean;
+  broccoliPayload!: BroccoliPayloadError;
 
-  constructor(originalError: any, nodeWrapper: any) {
+  constructor(originalError: any, nodeWrapper?: NodeWrapper) {
     if (nodeWrapper == null) {
       // for Chai
-      // @ts-ignore
       super();
       return;
     }
@@ -46,7 +63,6 @@ export default class BuildError extends BuilderError {
       nodeWrapper.label +
       instantiationStack;
 
-    // @ts-ignore
     super(message);
     // consider for x in y
     this.stack = originalError.stack;
